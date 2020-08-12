@@ -1,0 +1,46 @@
+#!/bin/bash
+
+status=$(ping google.com -c 2 | grep -i "2 packets");
+
+if [[ "100% packet loss" =~ $status ]]; then
+
+	echo "Internet not connected. Please connect and try again.";
+
+else
+	echo -e "--- ping statistics ---\n$status\n";
+        
+        while [ true ]; do
+                echo -n "Do you wish to update? [Y/n] ";
+	   	
+		read input;
+
+                case $input in
+
+                        "n" | "N")
+                                echo "\nGoodbye";
+                                break;
+				;;
+
+                        "y" | "Y")
+                                sudo echo -e "\nBeginning updates...";
+                                # Updates apt packages 
+                                sudo apt update && sudo apt-get update;
+                                # Upgrades apt packages
+                                sudo apt upgrade -y && sudo apt-get upgrade -y;
+                                # Same as above; also, updates system
+                                sudo apt dist-upgrade -y && sudo apt-get dist-upgrade -y;
+                                # Upgrade flatpak packages
+                                sudo flatpak update -y;
+                                # Removes unneeded packages
+                                sudo apt autoremove -y && sudo apt-get autoremove -y;
+                                break;
+				;;
+
+                        *)
+                                echo "\nInvalid input, please enter 'y' or 'n'.";
+                                ;;
+
+                esac
+        done
+fi
+exit;
